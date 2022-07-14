@@ -31,9 +31,22 @@ public class ParkingSpotController {
 	
 	@PostMapping
 	public ResponseEntity<Object> saveParkingSpot(@RequestBody @Valid ParkingSpotDto parkingSpotDto) {
+		
+		//TODO Move validations to a custom validator method
+		if(parkingSpotService.existsByLicensePlateCar(parkingSpotDto.getLicensePlateCar())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Conflict: Licence Plate Car is already in Use");
+		}
+		if(parkingSpotService.existsByParkingSpotNumber(parkingSpotDto.getParkingSpotNumber())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Conflict: Parking Spot Number already in Use");
+		}
+		if(parkingSpotService.existsByApartmentAndBlock(parkingSpotDto.getApartment(), parkingSpotDto.getBlock())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Conflict: Parking Spot already registered to this appartment");
+		}
+		
+		
 		var parkingSpotModel = new ParkingSpotModel();
 		BeanUtils.copyProperties(parkingSpotDto, parkingSpotModel);
-		parkingSpotModel.setRegistrationDate(LocalDateTime.now(ZoneId.of("UTC")));
+		parkingSpotModel.setRegistrationDate(LocalDateTime.now(ZoneId.of("UTC"))); //TODO: Improve to use Time Zone
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(parkingSpotService.save(parkingSpotModel));
 		
