@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -39,9 +41,14 @@ public class ParkingSpotService {
 	public boolean existsByApartmentAndBlock(String apartment, String block) {
 		return parkingSpotRepository.existsByApartmentAndBlock(apartment, block);
 	}
+	
+//	public List<ParkingSpotModel> findAll() {
+//		return parkingSpotRepository.findAll();
+//	}
 
-	public List<ParkingSpotModel> findAll() {
-		return parkingSpotRepository.findAll();
+	// Duplicated to add option for paging
+	public Page<ParkingSpotModel> findAll(Pageable pageable) {
+		return parkingSpotRepository.findAll(pageable);
 	}
 
 	public Optional<ParkingSpotModel> findById(UUID id) {
